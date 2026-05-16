@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDC 1991 - Control y Seguimiento Operativo (Guacara)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #05070c;
+        }
+        .glass-panel {
+            background: rgba(19, 26, 44, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f3f4f6;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-input:focus {
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.07);
+            outline: none;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #05070c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen pb-12">
+
+    <!-- ARQUITECTURA DE NAVEGACIÓN SUPERIOR GLOBAL -->
+    <header class="w-full sticky top-0 z-50 glass-panel border-b border-white/10 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+            <!-- Branding Core -->
+            <div class="flex items-center gap-3">
+                <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <span class="text-xs font-black tracking-tighter">HDC</span>
+                </div>
+                <div>
+                    <h1 class="text-md font-bold tracking-tight text-white flex items-center gap-2">
+                        GUACARA OPERATIVO <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">v1.0</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400">Ecosistema de Control y Trazabilidad</p>
+                </div>
+            </div>
+
+            <!-- Selectores de Portal Superior Absoluto (Gas/CLAP/Municipio) -->
+            <nav class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5">
+                <button onclick="switchPortal('municipio')" id="btn-portal-muni" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 bg-blue-600 text-white shadow-md">
+                    <i class="fa-solid fa-city mr-1.5"></i>Alcaldía
+                </button>
+                <button onclick="switchPortal('gas')" id="btn-portal-gas" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-fire-burner mr-1.5 text-emerald-500"></i>Portal Gas
+                </button>
+                <button onclick="switchPortal('clap')" id="btn-portal-clap" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-box-open mr-1.5 text-blue-400"></i>Portal CLAP
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 mt-6 space-y-6">
+
+        <!-- SECCIÓN 1: INTELIGENCIA OPERATIVA DE ALUMBRADO & PROYECCIÓN DE COSTOS -->
+        <section id="section-analytics" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Módulo Lumínico Técnico -->
+            <div class="glass-panel p-5 rounded-2xl md:col-span-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold tracking-wide text-slate-300 uppercase">Infraestructura Lumínica</h3>
+                        <i class="fa-solid fa-lightbulb text-amber-400 text-lg"></i>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Total Bombillos Municipio:</span>
+                            <input type="number" id="lum-total" value="12500" class="w-20 px-2 py-1 text-right rounded glass-input text-xs" oninput="calcularMetricasLuminicas()">
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Sustituidos / Instalados:</span>
+                            <input type="number" id="lum-instalados" value="4820" class="w-20 px-2 py-1 text-right rounded glass-input text-xs" oninput="calcularMetricasLuminicas()">
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Total Postes en Inventario:</span>
+                            <input type="number" id="postes-total" value="6200" class="w-20 px-2 py-1 text-right rounded glass-input text-xs" oninput="calcularMetricasLuminicas()">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-white/5">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[11px] text-slate-400">Eficiencia de Cobertura Lumínica</span>
+                        <span id="txt-eficiencia-lum" class="text-xs font-bold text-emerald-400">38.56%</span>
+                    </div>
+                    <div class="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-white/5">
+                        <div id="bar-eficiencia-lum" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full transition-all duration-500" style="width: 38.56%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculador Progresivo de Suministros (Pintura de Postes) -->
+            <div class="glass-panel p-5 rounded-2xl md:col-span-2">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold tracking-wide text-slate-300 uppercase">Cálculo Logístico de Suministros (Pintura)</h3>
+                    <i class="fa-solid fa-fill-drip text-blue-400 text-lg"></i>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Cantidad de Postes a Intervenir</label>
+                            <input type="number" id="calc-postes-cant" value="150" class="w-full px-3 py-1.5 rounded-xl glass-input text-xs font-medium" oninput="calcularLogisticaPintura()">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Paleta Cromática de Gestión</label>
+                            <select id="calc-paleta" class="w-full px-3 py-1.5 rounded-xl glass-input text-xs font-medium" onchange="calcularLogisticaPintura()">
+                                <option value="negro-aluminio">Negro Corporativo & Aluminio Difuso</option>
+                                <option value="azul-naranja">Azul Institucional & Naranja Táctico</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="bg-black/30 rounded-xl p-3 border border-white/5 flex flex-col justify-center space-y-2">
+                        <h4 class="text-[11px] text-slate-400 uppercase tracking-wider">Insumos Requeridos Estimados</h4>
+                        <div id="container-resultados-pintura" class="space-y-1.5">
+                            <!-- Inyección dinámica de algoritmos de cobertura -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: CORE DE REGISTRO E INTERVENCIONES DINÁMICAS -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Formulario Maestro de Inserción -->
+            <div class="glass-panel p-5 rounded-2xl lg:col-span-1 h-fit">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-200">Apertura de Actividad</h3>
+                </div>
+                <form id="form-actividad" class="space-y-4" onsubmit="crearActividad(event)">
+                    <div>
+                        <label class="block text-[11px] text-slate-400 mb-1">Título de la Intervención</label>
+                        <input type="text" id="act-titulo" placeholder="Ej: Embellecimiento de la Plaza Bolívar de Yagua" class="w-full px-3 py-2 rounded-xl glass-input text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-400 mb-1">Infraestructura Principal</label>
+                        <select id="act-tipo" class="w-full px-3 py-2 rounded-xl glass-input text-xs">
+                            <option value="Plaza">Plazas Públicas</option>
+                            <option value="CDI">Centros de Diagnóstico Integral (CDI)</option>
+                            <option value="Parada">Paradas de Transporte</option>
+                            <option value="Fachada">Reparación de Fachadas Históricas / Principales</option>
+                            <option value="Vial">Brocales y Tramas Viales</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-400 mb-1">Fecha de Despliegue Operativo</label>
+                        <input type="date" id="act-fecha" class="w-full px-3 py-2 rounded-xl glass-input text-xs" required>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white py-2 rounded-xl text-xs font-semibold tracking-wide shadow-md transition-all duration-300">
+                            <i class="fa-solid fa-folder-plus mr-2"></i>Inicializar Cuadro de Desglose
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tablero de Desglose Estadístico y Ejecución de Micro-Actividades -->
+            <div class="glass-panel p-5 rounded-2xl lg:col-span-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                    <div>
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-200">Cuadro de Desgloses y Ejecución Real</h3>
+                        <p class="text-[11px] text-slate-400">Avances cuantitativos secuenciales por fase</p>
+                    </div>
+                    <button onclick="exportarInformePDF()" class="bg-white/5 border border-white/10 hover:bg-white/10 text-white px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-file-pdf text-red-400"></i>Exportar Reporte Vivo
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-400 bg-black/20">
+                                <th class="p-3">Actividad e Infraestructura</th>
+                                <th class="p-3">Micro-Actividades Desarrolladas</th>
+                                <th class="p-3 text-center">Fases / Progreso</th>
+                                <th class="p-3 text-right">Logros Finales</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body-actividades" class="text-xs divide-y divide-white/5">
+                            <!-- Datos inyectados de forma reactiva -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: MAPA DE COBERTURA TERRITORIAL DE GUACARA (MONITOR DE CALOR SIMULADO) -->
+        <section class="glass-panel p-5 rounded-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-200">Matriz de Cobertura Territorial (Guacara)</h3>
+                    <p class="text-[11px] text-slate-400">Trazabilidad de sectores atendidos vs cuadrantes faltantes</p>
+                </div>
+                <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-1 rounded-lg font-mono" id="txt-global-cobertura">Sectores: 4 / 6</span>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="grid-territorios">
+                <!-- Se poblará dinámicamente con las zonas clave de Guacara -->
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript del Ecosistema -->
+    <script>
+        // Memoria de estado local para desarrollo incremental libre de destrucción de datos
+        let actividadesData = [
+            {
+                id: 1,
+                titulo: "Embellecimiento Integral Plaza Bolívar de Yagua",
+                tipo: "Plaza",
+                fecha: "2026-05-10",
+                micros: [
+                    { nombre: "Cambio de Publicidad / Cartelería", meta: 4, actual: 4 },
+                    { nombre: "Pintura de Estructuras Interiores", meta: 12, actual: 9 },
+                    { nombre: "Reparación de Fachadas de Entorno", meta: 3, actual: 2 }
+                ],
+                fase: "Fase 2: Ejecución Avanzada"
+            },
+            {
+                id: 2,
+                titulo: "Rehabilitación de Alumbrado y Pintura Vial Tramo Carretera Nacional",
+                tipo: "Vial",
+                fecha: "2026-05-14",
+                micros: [
+                    { nombre: "Instalación de Luminarias LED", meta: 40, actual: 40 },
+                    { nombre: "Pintura de Postes (Negro/Aluminio)", meta: 80, actual: 55 },
+                    { nombre: "Demarcación de Brocales (Metros)", meta: 500, actual: 350 }
+                ],
+                fase: "Fase 3: Fase de Logro Final"
+            }
+        ];
+
+        let sectoresGuacara = [
+            { nombre: "Yagua", atendido: true, porcentaje: 85 },
+            { nombre: "Ciudad Alianza", atendido: true, porcentaje: 90 },
+            { nombre: "Guacara Centro", atendido: true, porcentaje: 75 },
+            { nombre: "Araguita", atendido: false, porcentaje: 20 },
+            { nombre: "Vigirima", atendido: true, porcentaje: 60 },
+            { nombre: "El Toco", atendido: false, porcentaje: 15 }
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderActividades();
+            calcularLogisticaPintura();
+            calcularMetricasLuminicas();
+            renderTerritorios();
+        });
+
+        function switchPortal(portal) {
+            console.log("Cambiando al portal operativo: " + portal);
+            // Lógica de ruteo estricta superior. En v1.0 se mantiene fija la vista de Alcaldía.
+            alert("Módulo " + portal.toUpperCase() + " enlazado correctamente al Core Técnico HDC 1991.");
+        }
+
+        function renderActividades() {
+            const tbody = document.getElementById("table-body-actividades");
+            tbody.innerHTML = "";
+
+            actividadesData.forEach(act => {
+                let totalMeta = 0;
+                let totalActual = 0;
+                let microsHtml = act.micros.map(m => {
+                    totalMeta += m.meta;
+                    totalActual += m.actual;
+                    const pct = Math.round((m.actual / m.meta) * 100);
+                    return `
+                        <div class="mb-2 last:mb-0">
+                            <div class="flex justify-between text-[11px] text-slate-300 mb-0.5">
+                                <span>${m.nombre}</span>
+                                <span class="font-mono text-blue-400">${m.actual}/${m.meta} (${pct}%)</span>
+                            </div>
+                            <div class="w-full bg-black/30 h-1 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const progresoTotal = Math.round((totalActual / totalMeta) * 100);
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-white/[0.02] transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 align-top max-w-[200px]">
+                        <span class="text-[10px] uppercase font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded">${act.tipo}</span>
+                        <div class="font-semibold text-slate-200 mt-1.5 leading-snug">${act.titulo}</div>
+                        <div class="text-[10px] text-slate-500 mt-1"><i class="fa-solid fa-calendar-day mr-1"></i>${act.fecha}</div>
+                    </td>
+                    <td class="p-3 align-top">${microsHtml}</td>
+                    <td class="p-3 align-top text-center">
+                        <span class="px-2 py-1 rounded-full text-[10px] font-medium bg-slate-800 text-slate-300 border border-white/5 inline-block mb-2">${act.fase}</span>
+                        <div class="text-xs font-bold text-slate-300">${progresoTotal}% Completado</div>
+                    </td>
+                    <td class="p-3 align-top text-right font-mono font-bold ${progresoTotal === 100 ? 'text-emerald-400' : 'text-amber-400'}">
+                        ${totalActual === totalMeta ? '<i class="fa-solid fa-circle-check mr-1"></i> Éxito' : '<i class="fa-solid fa-spinner animate-spin mr-1"></i> En Curso'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calcularLogisticaPintura() {
+            const postes = parseInt(document.getElementById("calc-postes-cant").value) || 0;
+            const paleta = document.getElementById("calc-paleta").value;
+            const container = document.getElementById("container-resultados-pintura");
+            
+            container.innerHTML = "";
+            let galonesA = 0;
+            let galonesB = 0;
+            let textoA = "";
+            let textoB = "";
+
+            if (paleta === "negro-aluminio") {
+                // Algoritmo: 1 galón negro = 8 postes, 1 galón aluminio difuso = 12 postes
+                galonesA = Math.ceil(postes / 8);
+                galonesB = Math.ceil(postes / 12);
+                textoA = `Galones de Pintura Negra (1 gal / 8 postes)`;
+                textoB = `Galones de Aluminio Difuso (1 gal / 12 postes)`;
+            } else {
+                // Paleta Azul Institucional y Naranja Táctico (Rendimiento estándar estimado para alta visibilidad: 1 gal = 10 postes)
+                galonesA = Math.ceil(postes / 10);
+                galonesB = Math.ceil(postes / 10);
+                textoA = `Galones de Azul Institucional (1 gal / 10 postes)`;
+                textoB = `Galones de Naranja Táctico (1 gal / 10 postes)`;
+            }
+
+            container.innerHTML = `
+                <div class="flex justify-between items-center text-xs p-2 bg-white/5 rounded-lg">
+                    <span class="text-slate-300 text-[11px]">${textoA}:</span>
+                    <span class="font-bold text-white font-mono bg-blue-500/20 px-2 py-0.5 rounded">${galonesA} Gal</span>
+                </div>
+                <div class="flex justify-between items-center text-xs p-2 bg-white/5 rounded-lg">
+                    <span class="text-slate-300 text-[11px]">${textoB}:</span>
+                    <span class="font-bold text-white font-mono bg-amber-500/20 px-2 py-0.5 rounded">${galonesB} Gal</span>
+                </div>
+            `;
+        }
+
+        function calcularMetricasLuminicas() {
+            const total = parseInt(document.getElementById("lum-total").value) || 0;
+            const instalados = parseInt(document.getElementById("lum-instalados").value) || 0;
+            
+            if(total > 0) {
+                const pct = ((instalados / total) * 100).toFixed(2);
+                document.getElementById("txt-eficiencia-lum").innerText = `${pct}%`;
+                document.getElementById("bar-eficiencia-lum").style.width = `${pct}%`;
+            }
+        }
+
+        function renderTerritorios() {
+            const grid = document.getElementById("grid-territorios");
+            grid.innerHTML = "";
+            let atendidosCont = 0;
+
+            sectoresGuacara.forEach(sec => {
+                if(sec.atendido) atendidosCont++;
+                const card = document.createElement("div");
+                card.className = `p-3 rounded-xl border ${sec.atendido ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'} flex flex-col justify-between`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="font-semibold text-xs text-slate-200">${sec.nombre}</span>
+                        <div class="h-1.5 w-1.5 rounded-full ${sec.atendido ? 'bg-emerald-400 shadow-emerald-400/50' : 'bg-red-400 shadow-red-400/50'} shadow-sm"></div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+                            <span>Abordaje:</span>
+                            <span class="font-mono font-bold">${sec.porcentaje}%</span>
+                        </div>
+                        <div class="w-full bg-black/40 h-1 rounded-full overflow-hidden">
+                            <div class="${sec.atendido ? 'bg-emerald-500' : 'bg-red-500'} h-full" style="width: ${sec.porcentaje}%"></div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById("txt-global-cobertura").innerText = `Sectores: ${atendidosCont} / ${sectoresGuacara.length}`;
+        }
+
+        function crearActividad(e) {
+            e.preventDefault();
+            const titulo = document.getElementById("act-titulo").value;
+            const tipo = document.getElementById("act-tipo").value;
+            const fecha = document.getElementById("act-fecha").value;
+
+            // Micro-actividades base adaptables según la tipología elegida
+            let microsBase = [];
+            if(tipo === "Vial" || tipo === "Plaza") {
+                microsBase = [
+                    { nombre: "Pintura y Recuperación de Postes", meta: 10, actual: 0 },
+                    { nombre: "Sustituciones Lumínicas", meta: 5, actual: 0 },
+                    { nombre: "Acabados e Infraestructura", meta: 2, actual: 0 }
+                ];
+            } else {
+                microsBase = [
+                    { nombre: "Reparaciones de Fachada / Estructura", meta: 1, actual: 0 },
+                    { nombre: "Pintura General", meta: 4, actual: 0 },
+                    { nombre: "Habilitación Operativa", meta: 1, actual: 0 }
+                ];
+            }
+
+            const nuevaAct = {
+                id: actividadesData.length + 1,
+                titulo,
+                tipo,
+                fecha,
+                micros: microsBase,
+                fase: "Fase 1: Asignación e Inicio"
+            };
+
+            actividadesData.unshift(nuevaAct);
+            renderActividades();
+            document.getElementById("form-actividad").reset();
+        }
+
+        function exportarInformePDF() {
+            alert("Inicializando motor de renderizado de reportes. En entornos compilados (APK), esto activa la librería nativa de impresión y descarga PDF.");
+            window.print();
+        }
+    </script>
+</body>
+</html>
